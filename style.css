@@ -1,0 +1,41 @@
+body {
+  font-family: Arial, sans-serif;
+  background: #FEF3E2;
+  text-align: center;
+  padding: 20px;
+}
+
+.container {
+  max-width: 600px;
+  margin: auto;
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+input {
+  width: 70%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+}
+
+button {
+  padding: 10px 15px;
+  margin-left: 5px;
+  border: none;
+  border-radius: 8px;
+  background: #FA812F;
+  color: white;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #DD0303;
+}
+
+#recipeResult {
+  margin-top: 20px;
+  text-align: center;
+}
