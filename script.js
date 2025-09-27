@@ -7,7 +7,7 @@ async function getRecipe() {
     return;
   }
 
-  const apiKey = "377eb0f24f0c4d0aab3107e62ba1a935"; // 🔹 Replace with your Spoonacular key
+  const apiKey = "Your - api - key"; // 🔹 Replace with your Spoonacular key
   const searchUrl = `https://api.spoonacular.com/recipes/complexSearch?query=${dish}&number=3&apiKey=${apiKey}`;
 
   try {
