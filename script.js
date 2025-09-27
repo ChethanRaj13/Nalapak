@@ -7,44 +7,49 @@ async function getRecipe() {
     return;
   }
 
-  const query = `
-    query {
-      recipe(name: "${dish}") {
-        name
-        ingredients
-        instructions
-      }
-    }
-  `;
+  const apiKey = "377eb0f24f0c4d0aab3107e62ba1a935"; // 🔹 Replace with your Spoonacular key
+  const searchUrl = `https://api.spoonacular.com/recipes/complexSearch?query=${dish}&number=3&apiKey=${apiKey}`;
 
   try {
-    const response = await fetch("https://indian-recipes-graphql.vercel.app/graphql", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ query })
-    });
+    // Step 1: Search recipes
+    const searchResponse = await fetch(searchUrl);
+    const searchData = await searchResponse.json();
 
-    const result = await response.json();
-    const recipe = result.data.recipe;
-
-    if (!recipe) {
+    if (!searchData.results || searchData.results.length === 0) {
       resultDiv.innerHTML = "<p>No recipe found. Try another dish.</p>";
       return;
     }
 
-    let ingredientsList = "";
-    recipe.ingredients.forEach(item => {
-      ingredientsList += `<li>${item}</li>`;
-    });
+    let recipesHtml = "";
 
-    resultDiv.innerHTML = `
-      <h2>${recipe.name}</h2>
-      <h3>Ingredients:</h3>
-      <ul>${ingredientsList}</ul>
-      <h3>Instructions:</h3>
-      <p>${recipe.instructions}</p>
-    `;
+    // Step 2: Fetch details for each recipe
+    for (let recipe of searchData.results) {
+      const detailsUrl = `https://api.spoonacular.com/recipes/${recipe.id}/information?apiKey=${apiKey}`;
+      const detailsResponse = await fetch(detailsUrl);
+      const detailsData = await detailsResponse.json();
+
+      // Ingredients
+      let ingredientsList = "";
+      detailsData.extendedIngredients.forEach(item => {
+        ingredientsList += `<li>${item.original}</li>`;
+      });
+
+      recipesHtml += `
+        <div class="recipe-card">
+          <h2>${detailsData.title}</h2>
+          <h3>Ingredients:</h3>
+          <ul>${ingredientsList}</ul>
+          <h3>Instructions:</h3>
+          <p>${detailsData.instructions || "Instructions not available."}</p>
+          <hr>
+        </div>
+      `;
+    }
+
+    resultDiv.innerHTML = recipesHtml;
+
   } catch (error) {
     resultDiv.innerHTML = "<p>Error fetching recipe. Please try again later.</p>";
+    console.error("Error fetching recipe:", error);
   }
 }
