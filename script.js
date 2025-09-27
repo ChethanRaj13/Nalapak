@@ -7,44 +7,38 @@ async function getRecipe() {
     return;
   }
 
-  const apiKey = "Your - api - key"; // 🔹 Replace with your Spoonacular key
-  const searchUrl = `https://api.spoonacular.com/recipes/complexSearch?query=${dish}&number=3&apiKey=${apiKey}`;
+  const apiKey = "Your-API-Key"; // 🔹 Replace with your Spoonacular key
+  const searchUrl = `https://api.spoonacular.com/recipes/complexSearch?query=${dish}&number=3&addRecipeInformation=true&apiKey=${apiKey}`;
 
   try {
-    // Step 1: Search recipes
-    const searchResponse = await fetch(searchUrl);
-    const searchData = await searchResponse.json();
+    // Single API call
+    const response = await fetch(searchUrl);
+    const data = await response.json();
 
-    if (!searchData.results || searchData.results.length === 0) {
+    if (!data.results || data.results.length === 0) {
       resultDiv.innerHTML = "<p>No recipe found. Try another dish.</p>";
       return;
     }
 
     let recipesHtml = "";
-
-    // Step 2: Fetch details for each recipe
-    for (let recipe of searchData.results) {
-      const detailsUrl = `https://api.spoonacular.com/recipes/${recipe.id}/information?apiKey=${apiKey}`;
-      const detailsResponse = await fetch(detailsUrl);
-      const detailsData = await detailsResponse.json();
-
+    data.results.forEach(recipe => {
       // Ingredients
       let ingredientsList = "";
-      detailsData.extendedIngredients.forEach(item => {
+      recipe.extendedIngredients.forEach(item => {
         ingredientsList += `<li>${item.original}</li>`;
       });
 
       recipesHtml += `
         <div class="recipe-card">
-          <h2>${detailsData.title}</h2>
+          <h2>${recipe.title}</h2>
           <h3>Ingredients:</h3>
           <ul>${ingredientsList}</ul>
           <h3>Instructions:</h3>
-          <p>${detailsData.instructions || "Instructions not available."}</p>
+          <p>${recipe.instructions || "Instructions not available."}</p>
           <hr>
         </div>
       `;
-    }
+    });
 
     resultDiv.innerHTML = recipesHtml;
 
